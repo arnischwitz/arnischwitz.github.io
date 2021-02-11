@@ -1,7 +1,5 @@
 
 body{
-	margin-left: 10em;
-	margin-right: 10em;
 	margin-top: 4em;
 	background: white;
 }
@@ -14,15 +12,21 @@ body{
 
 .myintro{
 	border-style: none;
+	margin-left: 4em;
+	margin-right: 4em;
 }
 
 .myname{
 	text-align: center;
 	font-weight: bold;
+	overflow: hidden;
+    white-space: nowrap;
 }
 
 .mytitle{
 	text-align: center;
+	overflow: hidden;
+    white-space: nowrap;
 }
 
 .row{
