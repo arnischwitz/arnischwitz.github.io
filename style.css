@@ -1,6 +1,7 @@
 
 body{
-	background: black;
+	margin: 10em;
+	background: white;
 }
 
 .header{
@@ -11,6 +12,19 @@ body{
 	background: white;
 	margin-left: 1.0em;
 	margin-right: 1.0em;
+}
+
+.myintro{
+	border-style: none;
+}
+
+.myname{
+	text-align: center;
+	font-weight: bold;
+}
+
+.mytitle{
+	text-align: center;
 }
 
 .row{
