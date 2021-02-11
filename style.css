@@ -4,6 +4,10 @@ body{
 	background: white;
 }
 
+.card{
+	border-width: 0.2em;
+}
+
 .jumbotron{
 	background: white;
 	margin-left: 1.0em;
@@ -12,6 +16,7 @@ body{
 
 .myintro{
 	border-style: none;
+	margin-bottom: 2.0em;
 	margin-left: 4em;
 	margin-right: 4em;
 }
@@ -29,8 +34,8 @@ body{
     white-space: nowrap;
 }
 
-.row{
-	margin-bottom: 2.0em;
-	margin-left: 0.0em;
-	margin-right: 0.0em;
+.cardrow{
+	margin-bottom: 4.0em;
+	margin-left: 2.0em;
+	margin-right: 2.0em;
 }
