@@ -1,11 +1,8 @@
 
 body{
 	margin: 10em;
+	margin-top: 5em;
 	background: white;
-}
-
-.header{
-    min-height: 90px;
 }
 
 .jumbotron{
@@ -31,8 +28,4 @@ body{
 	margin-bottom: 2.0em;
 	margin-left: 0.0em;
 	margin-right: 0.0em;
-}
-
-.spacer{
-	padding-top: 1.0em;
 }
