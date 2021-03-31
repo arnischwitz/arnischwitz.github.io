@@ -8,6 +8,10 @@ body{
 	border-width: 0.2em;
 }
 
+.description{
+	font-size: 1.1em;
+}
+
 .jumbotron{
 	background: white;
 	margin-left: 1.0em;
