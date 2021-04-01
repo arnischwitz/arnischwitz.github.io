@@ -22,20 +22,20 @@
 					<div class="card myintro">
 						<h1>The Pascal Game Engine</h1>
 						<p><!-- spacing hack --></p>
-						<p class="description">
+						<p class="section-body">
 							I created this game engine during the game engine track at DePaul (GAM 475, GAM 575, GAM 576).
 							It was built using C++ and OpenGL.
 							The engine utilizes many static libraries that I also made for class.
 							They cover the following the following areas: 3D Math, File IO, and PCS Tree.
 						</p>
-						<p class="description">
+						<p class="section-body">
 							Here is a video overview of the Pascal Engine.
 							More in-depth information can be found further down this page.
 						</p>
 						<h3>[ Video goes here ]</h3>
-						<p><!-- spacing hack --></p>
-						<h3>What can it do?</h3>
-						<p class="description">
+
+						<h2 class="section-title">What can it do?</h2>
+						<p class="section-body">
 							The Pascal Engine is pretty simple and is mostly for rendering models and animation for now.
 							The core technology that powers it is OpenGL.
 							It can open Models and Animations that have been converted to the .yogi format (<a href="yogi.html">see Yogi Archiver</a>).
@@ -45,10 +45,20 @@
 							Animations are attached to Rigid Game Objects.
 							Both of these can be attached to other Rigid Game Objects and moved together as groups.
 						</p>
+						<p class="section-body">
+							This is all accomplished using resources, managers, and static libraries.
+						</p>
 						
-						<p><!-- spacing hack --></p>
-						<h3>File Static Library</h3>
-						<p class="description">
+						<h2 class="section-title">Resources and Managers</h2>
+
+						<h3 class="section-subtitle">Models</h3>
+						<h3 class="section-subtitle">Textures</h3>
+						<h3 class="section-subtitle">Shaders</h3>
+
+						<h2 class="section-title">Static Libraries</h2>
+						
+						<h3 class="section-subtitle">File Static Library</h3>
+						<p class="section-body">
 							The File Library is a wrapper for Win32 system file IO operations.
 							It can:
 						</p>
@@ -58,10 +68,9 @@
 						<li>Flush the file buffer</li>
 						<li>Check if file handles are valid</li>
 
-						<p><!-- spacing hack --></p>
-						<h3>Math Static Library</h3>
+						<h3 class="section-subtitle">Math Static Library</h3>
 						<!-- TO DO : <img src="images/vect_scale.png"> -->
-						<p class="description">
+						<p class="section-body">
 							The Math Library can many 3D geometric operations.
 							It also wraps some basic trigonmetry from the C++ standard library.
 							The library limits the use of types to increase performance, so floats are always used instead of doubles.
@@ -74,9 +83,8 @@
 						<li>Utilities for comparing floating point values within error</li>
 						<li>Frequently used mathematical constants</li>
 
-						<p><!-- spacing hack --></p>
-						<h3>PCS Tree Static Library</h3>
-						<p class="description">
+						<h3 class="section-subtitle">PCS Tree Static Library</h3>
+						<p class="section-body">
 							The PCS Tree Library can create and manipulate trees constructed using a Parent, Child, Sibling relationship structure.
 							It can:
 						</p>
