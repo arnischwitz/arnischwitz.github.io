@@ -45,12 +45,33 @@
 							Animations are attached to Rigid Game Objects.
 							Both of these can be attached to other Rigid Game Objects and moved together as groups.
 						</p>
+						
 						<p><!-- spacing hack --></p>
 						<h3>File Static Library</h3>
 						<p class="description">
 							The File Library is a wrapper for Win32 system file IO operations.
-							It can read, write, seek...
+							It can:
 						</p>
+						<li>Open and close files</li>
+						<li>Open files for read only, write only, or read and write operations</li>
+						<li>Seek and Tell locations on disk</li>
+						<li>Flush the file buffer</li>
+						<li>Check if file handles are valid</li>
+
+						<p><!-- spacing hack --></p>
+						<h3>Math Static Library</h3>
+						<p class="description">
+							The Math Library can many 3D geometric operations.
+							It also wraps some basic trigonmetry from the C++ standard library.
+							The library limits the use of types to increase performance, so floats are always used instead of doubles.
+							The library contains operations and definitions for:
+						</p>
+						<li>Trigonmetry (general operations)</li>
+						<li>Vectors (general operations, special constructions, conversions, and linear interpolation)</li>
+						<li>Quaternions (general operations, special constructions, conversions, and spherical linear interpolation)</li>
+						<li>Matrices (general operations, special constructions, and conversions</li>
+						<li>Utilities for comparing floating point values within error</li>
+						<li>Frequently used mathematical constants</li>
 					</div>
 				</div>
 				<div class="col-md-1"></div>
