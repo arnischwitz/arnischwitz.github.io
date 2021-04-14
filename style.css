@@ -8,6 +8,17 @@ body{
 	border-width: 0.2em;
 }
 
+.iframe{
+	flex: 1 1 auto;
+	border: 0;
+}
+
+.iframe-wrapper{
+	display: flex;
+	flex-direction: column;
+	height: 64vh;
+}
+
 .jumbotron{
 	background: white;
 	margin-left: 1.0em;
