@@ -46,6 +46,8 @@
 							Before I talk about my implementation, I want to give a brief overview of DirectX 12’s rendering pipeline.
 							I won’t mention every stage, just the stages that are important for a general understanding of what I will be working with in my graphics engine.
 							I will also list each stage’s ability to read and write from GPU resources.
+						</p>
+						<p class="section-body">
 							Stages of the Rendering Pipeline:
 						</p>
 						<ul>
@@ -74,7 +76,7 @@
 
 						<h3 class="section-subtitle">3. Rasterizer</h3>
 						<p class="section-body">
-							The Intro to 3D Programming book simply states that it’s job is to “compute pixel colors from the projected 3D triangles.” [Luna, 193]
+							Frank Luna's "Intro to 3D Programming" book simply states that it’s job is to “compute pixel colors from the projected 3D triangles.”
 							This is true, but the practical benefits are much more interesting.
 							The rasterizer can interpolate vertex attributes between vertices, such as blending colors across a cube.
 							It is also where backface culling computed.
@@ -105,8 +107,8 @@
 							Another important part of the DirectX12 model is the Command Queue, Command Allocators, and Command Lists.
 							The Command Queue is important; it will be where all of the Command Lists are executed.
 							Command Allocators are the memory where Command Lists live.
-							It is recommended by Nvidia to use multiple Command Allocators and Command Lists when writing multi-threaded applications, and generating one allocator and list per frame buffer, multiplied by the number of threads, plus an extra set for bundles (not discussed in this paper).
-							[Nvidia Site] All Command Lists, no matter what thread they live on, must make their way into the Command Queue at some point.
+							It is recommended by Nvidia (<a href="https://developer.nvidia.com/dx12-dos-and-donts">Nvidia Developer Site</a>) to use multiple Command Allocators and Command Lists when writing multi-threaded applications, and generating one allocator and list per frame buffer, multiplied by the number of threads, plus an extra set for bundles.
+							All Command Lists, no matter what thread they live on, must make their way into the Command Queue at some point.
 						</p>
 
 						<h2 class="section-title">My Graphics Engine Implementation</h2>
@@ -206,19 +208,19 @@
 							<li>4. Unload Content</li>
 						</ul>
 
-						<h4 class="section-subtitle">Load Content</h4>
+						<h4 class="section-subtitle">1. Load Content</h4>
 						<p class="section-body">
 							This is where as-needed DirectX 12 resources are created and initialized.
 							It is also where user defined content such as managers are created and initialized.
 						</p>
 
-						<h4 class="section-subtitle">Update</h4>
+						<h4 class="section-subtitle">2. Update</h4>
 						<p class="section-body">
 							Update is where various parts of the system are updated before they are sent to the GPU for rendering.
 							This is where objects like models and cameras are transformed and inputs are handled.
 						</p>
 
-						<h4 class="section-subtitle">Draw</h4>
+						<h4 class="section-subtitle">3. Draw</h4>
 						<p class="section-body">
 							This is where DirectX 12 comes back into heavy involvement.
 							The Draw call is wrapped in a set of checks for synchronization.
@@ -232,7 +234,7 @@
 							I then tell the Swap Chain to Present, and head back over to Update to get ready for the next Draw call.
 						</p>
 
-						<h4 class="section-subtitle">Unload Content</h4>
+						<h4 class="section-subtitle">4. Unload Content</h4>
 						<p class="section-body">
 							This is where user content and some DirectX 12 systems gets torn down.
 							The parts of DirectX 12 that were handled by Engine and DX_Framework will be handled after this call.
