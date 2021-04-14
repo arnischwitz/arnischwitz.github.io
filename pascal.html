@@ -12,7 +12,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="style.css">
 		
-		<title>Alex's Dev Site</title>
+		<title>Alex's Pascal Engine</title>
 	</head>
 	<body>
 		<div class="container-flex">
@@ -20,6 +20,12 @@
 				<div class="col-md-1"></div>
 				<div class="col-md-10">
 					<div class="card myintro">
+						<nav aria-label="breadcrumb" class="my-breadcrumb">
+							<ol class="breadcrumb">
+							  <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+							  <li class="breadcrumb-item active" aria-current="page">Pascal Engine</li>
+							</ol>
+						</nav>
 						<h1>The Pascal Game Engine</h1>
 						<p><!-- spacing hack --></p>
 						<p class="section-body">
@@ -51,9 +57,31 @@
 						
 						<h2 class="section-title">Resources and Managers</h2>
 
+						<h3 class="section-subtitle">Manager Pattern</h3>
+						<p class="section-body">
+							The managers that are used to manage engine resources are made of two main parts: a singleton manager and a doubly linked list of nodes.
+							Each node is a base class that a resource class is derived from.
+							For example: the Model Manager contains a list of Models.
+							By storing only one instance of each type of resource in each manager, a lot of space and time is saved.
+						</p>
+
 						<h3 class="section-subtitle">Models</h3>
+						<p class="section-body">
+							Models are abstractions of vertices and triangles that will be rendered to the screen.
+							They are responsible for keeping track of all information necessary to build triangles using the OpenGL API.
+						</p>
+
 						<h3 class="section-subtitle">Textures</h3>
+						<p class="section-body">
+							Textures are abstractions of texuture data to be mapped to model geometry.
+							There can be more than one instance of a texture containing the same image data, but it may have different uv mapping settings.
+						</p>
+
 						<h3 class="section-subtitle">Shaders</h3>
+						<p class="section-body">
+							Shaders are abstractions containing shader files and data for rendering objects.
+							They are responsible for keeping track of all information necessary for graphics objects to know what to send to the GPU.
+						</p>
 
 						<h2 class="section-title">Static Libraries</h2>
 						
