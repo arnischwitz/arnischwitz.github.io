@@ -1,0 +1,311 @@
+
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="style.css">
+		
+		<title>Alex's DX 12 Research</title>
+	</head>
+	<body>
+		<div class="container-flex">
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-10">
+					<div class="card myintro">
+						<nav aria-label="breadcrumb" class="my-breadcrumb">
+							<ol class="breadcrumb">
+							  <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+							  <li class="breadcrumb-item active" aria-current="page">DirectX 12 Research</li>
+							</ol>
+						</nav>
+						<h1>DirectX 12 Research</h1>
+						<p><!-- spacing hack --></p>
+						<p class="section-body">
+							My research project during Winter Quarter 2021 was porting my Pascal Engine from OpenGL 4 to DirectX 12.
+							I chose DirectX 12 as my target graphics API because it is the newest version available from Microsoft and it is becoming popular across the game development industry.
+							DirectX 12 provides access to lower layers of the API than previous iterations of Direct3D and other APIs, but comes at the cost of additional complexity.
+						</p>
+						<p class="section-body">
+							Here is a video overview of my research project.
+							More in-depth information can be found further down this page.
+						</p>
+						<P>
+							* Video coming soon! *
+						</P>
+						<!--
+						<div class=iframe-wrapper>
+							<iframe class="iframe" src="https://www.youtube-nocookie.com/embed/nIV_jE78y1E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+						</div>
+						-->
+
+						<h2 class="section-title">The DirectX 12 Model</h2>
+						<p class="section-body">
+							Before I talk about my implementation, I want to give a brief overview of DirectX 12’s rendering pipeline.
+							I won’t mention every stage, just the stages that are important for a general understanding of what I will be working with in my graphics engine.
+							I will also list each stage’s ability to read and write from GPU resources.
+						</p>
+						<p class="section-body">
+							Stages of the Rendering Pipeline:
+						</p>
+						<ul>
+							<li>1. Input Assembler (Read)</li>
+							<li>2. Vertex Shader (Read)</li>
+							<li>3. Rasterizer (Read)</li>
+							<li>4. Pixel Shader (Read)</li>
+							<li>5. Output Merger (Read and Write)</li>
+						</ul>
+
+						<h3 class="section-subtitle">1. Input Assembler</h3>
+						<p class="section-body">
+							To draw an object to the screen, information is required as to where and how an object should be drawn.
+							The basic geometric data required for defining a graphical primitive are vertices and indices.
+							DirectX 12 requires triangles and quads to define objects drawn to the screen, and a primitive topology must be defined to DirectX 12 so the GPU can properly interpret the data provided to it.
+						</p>
+
+						<h3 class="section-subtitle">2. Vertex Shader</h3>
+						<p class="section-body">
+							A graphics shader is defined in a HLSL (high level shader language).
+							The file will be compiled into two parts: a vertex shader and a pixel shader.
+							The Vertex Shader stage is when the code written in the vertex shader is run on the GPU.
+							A vertex shader is essentially a function that takes a vertex, does a bunch of operations on it, and then outputs the new vertex.
+							Any per-vertex work is done here, like transforming a model or applying some lighting effects.
+						</p>
+
+						<h3 class="section-subtitle">3. Rasterizer</h3>
+						<p class="section-body">
+							Frank Luna's "Intro to 3D Programming" book simply states that it’s job is to “compute pixel colors from the projected 3D triangles.”
+							This is true, but the practical benefits are much more interesting.
+							The rasterizer can interpolate vertex attributes between vertices, such as blending colors across a cube.
+							It is also where backface culling computed.
+							Backface culling is when any triangle of an object is facing away from the camera, these rear facing triangles are not rendered, which is faster than drawing them.
+						</p>
+
+						<h3 class="section-subtitle">4. Pixel Shader</h3>
+						<p class="section-body">
+							A pixel shader will take the aforementioned vertex shader’s output and use it as input.
+							This output is then applied to any pixels that have not been eliminated by previous stages of the pipeline.
+							This is also where effects that require per-pixel computation are done, like reflections and shadowing.
+						</p>
+
+						<h3 class="section-subtitle">5. Output Merger</h3>
+						<p class="section-body">
+							This is the last stage before the data computed so far is written to the back buffer to be displayed.
+							Depth and stencil test are done here, eliminating even more unnecessary rendering, such as when an object is hidden behind another object.
+						</p>
+
+						<h3 class="section-subtitle">Resources</h3>
+						<p class="section-body">
+							DirectX 12 has different resources that allow the user to define what happens in this pipeline.
+							A resource is essentially a chunk of memory that the CPU and GPU can access.
+							Resources are described using descriptors, an indirection that tells the GPU what is in the resource so it can act accordingly.
+							Much of the DirectX 12 code I have written handles resources and descriptions for the pipeline, root signatures, textures, constant buffers, and more.
+						</p>
+						<p class="section-body">
+							Another important part of the DirectX12 model is the Command Queue, Command Allocators, and Command Lists.
+							The Command Queue is important; it will be where all of the Command Lists are executed.
+							Command Allocators are the memory where Command Lists live.
+							It is recommended by Nvidia (<a href="https://developer.nvidia.com/dx12-dos-and-donts">Nvidia Developer Site</a>) to use multiple Command Allocators and Command Lists when writing multi-threaded applications, and generating one allocator and list per frame buffer, multiplied by the number of threads, plus an extra set for bundles.
+							All Command Lists, no matter what thread they live on, must make their way into the Command Queue at some point.
+						</p>
+
+						<h2 class="section-title">My Graphics Engine Implementation</h2>
+						
+						<h3 class="section-subtitle">DX_Framework</h3>
+						<p class="section-body">
+							My graphics engine is structured in a similar fashion to the Azul engine that we have been using at DePaul.
+							My class for controlling much of the DirectX 12 code is called “DX_Framework”.
+							A large chunk of DirectX 12 code used for starting up and shutting down the system lives here.
+							This is also where my code for Win32 application operations also lives.
+							I have plans to continue to work on abstracting the Win32 code out of this framework into it’s own class.
+							I also have to mention that I opted for a Triple Frame Buffering system for my game loop.
+							This allows me to write to other render frames before the current frame is done rendering.
+							This has various effects on the setup I describe here, so it is important to keep in mind.
+							Here is the order and descriptions of the steps I take to setup the DirectX 12 environment in engine.
+							DirectX 12 Engine Initialization:
+						</p>
+						<ul>
+							<li>1. Device Creation</li>
+							<li>2. Command Queue Creation</li>
+							<li>3. Swap Chain Description and Creation</li>
+							<li>4. Render Target View Heap Creation</li>
+							<li>5. Command Allocator and Command List Creation</li>
+							<li>6. Create Fences</li>
+							<li>7. Depth & Stencil Buffer View Creation</li>
+							<li>8. Viewport and Scissor Rectangle Settings</li>
+						</ul>
+
+						<h4 class="section-subtitle">1. Device Creation</h4>
+						<p class="section-body">
+							This stage is simple.
+							I poll the system to find a DirectX 12 compatible hardware GPU adapter and get a handle to it, which is known as a Device.
+							The Device is used to get and set various things to and from the GPU adapter.
+						</p>
+
+						<h4 class="section-subtitle">2. Command Queue Creation</h4>
+						<p class="section-body">
+							This is where I create the Command Queue.
+							There is nothing fancy here, because there is only one Command Queue for the whole application.
+						</p>
+
+						<h4 class="section-subtitle">3. Swap Chain Description and Creation</h4>
+						<p class="section-body">
+							This is where things start to get more complicated.
+							The swap chain need to know how many frame buffers I plan on using so it can create them.
+							An application needs at least two, but I have opted for three.
+						</p>
+
+						<h4 class="section-subtitle">4. Render Target View Heap Creation</h4>
+						<p class="section-body">
+							Render Target Views are used to bind resources to pipeline stages.
+							Here I create a Render target View for each frame buffer created when I setup the Swap Chain.
+						</p>
+
+						<h4 class="section-subtitle">5. Command Allocator and Command List Creation</h4>
+						<p class="section-body">
+							This is where I create the Command Allocators and Command Lists I will be using in my engine.
+							I am not generating any of my own threads, and I am not using bundles, so I only create an allocator and list for each frame buffer.
+							This is how I can write to the next buffer while the previous buffer is still rendering to the screen!
+						</p>
+
+						<h4 class="section-subtitle">6. Fence Creation</h4>
+						<p class="section-body">
+							Even though I am not using multi-threading on the CPU side of the system, I still need to be able to coordinate my operations with the GPU.
+							At a high level, this can be very similar to writing a standard multi-threaded program with two threads; synchronization methods must be used or bad things tend to happen.
+							Fences are used to make sure that the CPU and GPU do not fall out of sync with each other.
+						</p>
+
+						<h4 class="section-subtitle">7. Depth & Stencil Buffer View Creation</h4>
+						<p class="section-body">
+							The Depth & Stencil Buffer View allows me to do things like determine which objects should be drawn when one is overlapping another.
+							There is only one of these that needs to be generated.
+						</p>
+
+						<h4 class="section-subtitle">8. Viewport and Scissor Rectangles</h4>
+						<p class="section-body">
+							These are settings that tell DirectX 12 what parts of the application window to render to.
+							These are set to the default values of the window’s width and height for my purposes.
+						</p>
+
+						<h3 class="section-subtitle">Engine</h3>
+						<p class="section-body">
+							I do not make calls to DX_Framework directly from my application.
+							Engine is where I make calls to various DirectX12 objects.
+							Engine is also in charge of the application’s life cycle.
+							Engine asks for DirectX 12 to be initialized, then enters the game loop and polls Win32 for input and application window changes.
+						</p>
+
+						<h3 class="section-subtitle">Game</h3>
+						<p class="section-body">
+							Game is where the magic happens. Game is divided into four cores sections:
+						</p>
+						<ul>
+							<li>1. Load Content</li>
+							<li>2. Update</li>
+							<li>3. Draw</li>
+							<li>4. Unload Content</li>
+						</ul>
+
+						<h4 class="section-subtitle">1. Load Content</h4>
+						<p class="section-body">
+							This is where as-needed DirectX 12 resources are created and initialized.
+							It is also where user defined content such as managers are created and initialized.
+						</p>
+
+						<h4 class="section-subtitle">2. Update</h4>
+						<p class="section-body">
+							Update is where various parts of the system are updated before they are sent to the GPU for rendering.
+							This is where objects like models and cameras are transformed and inputs are handled.
+						</p>
+
+						<h4 class="section-subtitle">3. Draw</h4>
+						<p class="section-body">
+							This is where DirectX 12 comes back into heavy involvement.
+							The Draw call is wrapped in a set of checks for synchronization.
+							At the beginning of Draw, I wait for any data from the previous frame to be sent to the GPU for rendering so I can start working with CPU side resources.
+							It is important not to swap a texture or move a camera before the data can be sent over!
+							When the wait is finished, I reset the Command Allocator and Command List for the frame buffer I am currently working with.
+							I then set the Render Target View description and clear the current Render Target View.
+							I then use this description to start creating the new Render Target View.
+							Once everything is set, I can start adding commands to the current Command List.
+							Once this is finished, I send the Command List to the Command Queue and send a signal to the GPU that the Queue is ready.
+							I then tell the Swap Chain to Present, and head back over to Update to get ready for the next Draw call.
+						</p>
+
+						<h4 class="section-subtitle">4. Unload Content</h4>
+						<p class="section-body">
+							This is where user content and some DirectX 12 systems gets torn down.
+							The parts of DirectX 12 that were handled by Engine and DX_Framework will be handled after this call.
+						</p>
+
+						<h3 class="section-subtitle">Model</h3>
+						<p class="section-body">
+							This is where Resource Views and Heaps are created to send vertex and index data to the GPU.
+							Models have a SetActive method that can be called to place Topology, Vertex, and Index buffer calls onto the Command List.
+						</p>
+
+						<h3 class="section-subtitle">Camera</h3>
+						<p class="section-body">
+							This is where the abstraction of a camera in the digital 3D space lives.
+							There are no DirectX 12 calls made in the Camera class.
+							However, Camera data needs to be sent to the GPU on a per-frame basis, so I will be mentioning them again when talking about Shaders.
+						</p>
+
+						<h3 class="section-subtitle">Texture</h3>
+						<p class="section-body">
+							In this context, I will be describing textures as image files to be mapped to the surface of models.
+							Textures can be fairly complicated, but for the most part they contain a lot of code to interpret the file’s byte data and upload the data to the GPU.
+							The good news is: once we load the Texture to the GPU, we can just reference it later using descriptors, we do not need to send it over and over again!
+							Like Models, Textures also have a SetActive method that does this referencing.
+						</p>
+
+						<h3 class="section-subtitle">Shaders</h3>
+						<p class="section-body">
+							Shaders contain very important information that is required for any object to be drawn to the screen.
+							The three things that make Shaders important are shader file compilation, Root Signatures and Pipeline States.
+							The Shaders I have written will load HLSL files and define the input layout for the input assembly stage to pass to the vertex shader.
+							A Root Signature is a definition of what kinds of data a Pipeline State will use.
+							For the most part, my Root Signatures describe Constant Buffer Views.
+							These Constant Buffers are what I use to send model, camera, and light data to the vertex and pixel shader stages.
+							The Pipeline State wraps up information about the shader and must be set so the GPU can be in the right state to interpret the data sen to it.
+							Shaders also have a SetActive method that sets their Root Signature and Pipeline State active.
+							It is expensive to switch Root Signatures so it’ s important to take time to define well thought out shaders.
+						</p>
+
+						<h3 class="section-subtitle">Graphics Objects</h3>
+						<p class="section-body">
+							This is where levels of abstraction on top of the DirectX 12 heavy objects begin.
+							Graphics Objects contain references to a Model and Shader (and sometimes Textures) that they are in charge of updating and rendering.
+							This is where all of the aforementioned SetActive calls are made to prepare the GPU for the data that follows.
+							Once everything is set, data such as Constant Buffers can be sent over.
+							Graphics Objects also contain a Draw method that is called during Game’s Draw call.
+						</p>
+
+						<h3 class="section-subtitle">Game Objects</h3>
+						<p class="section-body">
+							I included Game Objects because they are a higher level of abstraction for the Graphics Objects.
+							I feel that this proves that all of the code contained by a Game Object is properly organized and concerns have been separated appropriately.
+							These allow me to move objects around a 3D environment and keep all of my objects in a manager so they can be accessed and destroyed easily.
+						</p>
+					</div>
+				</div>
+				<div class="col-md-1"></div>
+			</div>
+		</div>
+
+		
+		<!-- SCRIPTS -->
+		
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	</body>
+</html> 
