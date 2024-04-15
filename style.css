@@ -19,6 +19,10 @@ body{
 	height: 64vh;
 }
 
+.img-25{
+	max-width: 25%;
+}
+
 .jumbotron{
 	background: white;
 	margin-left: 1.0em;
