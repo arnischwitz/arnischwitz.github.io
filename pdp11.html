@@ -12,7 +12,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="style.css">
 		
-		<title>Alex's DX 12 Research</title>
+		<title>nischwitz.dev - PDP-11</title>
 	</head>
 	<body>
 		<div class="container-flex">
@@ -26,42 +26,32 @@
 							  <li class="breadcrumb-item active" aria-current="page">DirectX 12 Research</li>
 							</ol>
 						</nav>
-						<h1>DirectX 12 Research</h1>
+						<h1>PDP-11: Programming like it's 1975</h1>
 						<p><!-- spacing hack --></p>
 						<p class="section-body">
-							My research project during Winter Quarter 2021 was porting my Pascal Engine from OpenGL 4 to DirectX 12.
-							I chose DirectX 12 as my target graphics API because it is the newest version available from Microsoft and it is becoming popular across the game development industry.
-							DirectX 12 provides access to lower layers of the API than previous iterations of Direct3D and other APIs, but comes at the cost of additional complexity.
+							In April of 2023 I acquired the popular PiDP-11 from Oscar 
+							<a href="https://obsolescence.wixsite.com/obsolescence" target="_blank">here</a>
+							. It is currently my favorite machine to program for. Here's a picture of me running a sample program for the first time.
 						</p>
-						<p class="section-body">
-							Here is a video overview of my research project.
-							More in-depth information can be found further down this page.
-						</p>
-						<P>
-							* Video coming soon! *
-						</P>
-						<!--
-						<div class=iframe-wrapper>
-							<iframe class="iframe" src="https://www.youtube-nocookie.com/embed/nIV_jE78y1E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-						</div>
-						-->
+						<img class="img-fluid" src="images/pidp-11.jpg" alt="Card image cap" style="width:50%;">
 
-						<h2 class="section-title">The DirectX 12 Model</h2>
+						<h2 class="section-title">Programming the Hard Way</h2>
 						<p class="section-body">
-							Before I talk about my implementation, I want to give a brief overview of DirectX 12’s rendering pipeline.
-							I won’t mention every stage, just the stages that are important for a general understanding of what I will be working with in my graphics engine.
-							I will also list each stage’s ability to read and write from GPU resources.
+							I wanted to immediately start programming, so I started by entering sample programs I found online into memory using the switches located on the front of the unit.
+							This is not an ideal long term solution, but it  has taught me a lot so far.
 						</p>
 						<p class="section-body">
-							Stages of the Rendering Pipeline:
+							To start messing with memory after boot up, do the following:
 						</p>
 						<ul>
-							<li>1. Input Assembler (Read)</li>
-							<li>2. Vertex Shader (Read)</li>
-							<li>3. Rasterizer (Read)</li>
-							<li>4. Pixel Shader (Read)</li>
-							<li>5. Output Merger (Read and Write)</li>
+							<li>1. Boot into the sample blinking lights program</li>
+							<li>2. Move the "ENABLE/HALT" switch down to halt the current program</li>
+							<li>3. Depress the "LOAD ADRS" switch to load address 000000<sub>8</sub></li>
+							<li>4. Start entering opcodes and data</li>
 						</ul>
+						<p class="section-body">
+							This is the short and simple version of events. I will explain more as we go.
+						</p>
 
 						<h3 class="section-subtitle">1. Input Assembler</h3>
 						<p class="section-body">
@@ -192,107 +182,6 @@
 						<p class="section-body">
 							These are settings that tell DirectX 12 what parts of the application window to render to.
 							These are set to the default values of the window’s width and height for my purposes.
-						</p>
-
-						<h3 class="section-subtitle">Engine</h3>
-						<p class="section-body">
-							I do not make calls to DX_Framework directly from my application.
-							Engine is where I make calls to various DirectX12 objects.
-							Engine is also in charge of the application’s life cycle.
-							Engine asks for DirectX 12 to be initialized, then enters the game loop and polls Win32 for input and application window changes.
-						</p>
-
-						<h3 class="section-subtitle">Game</h3>
-						<p class="section-body">
-							Game is where the magic happens. Game is divided into four cores sections:
-						</p>
-						<ul>
-							<li>1. Load Content</li>
-							<li>2. Update</li>
-							<li>3. Draw</li>
-							<li>4. Unload Content</li>
-						</ul>
-
-						<h4 class="section-subtitle">1. Load Content</h4>
-						<p class="section-body">
-							This is where as-needed DirectX 12 resources are created and initialized.
-							It is also where user defined content such as managers are created and initialized.
-						</p>
-
-						<h4 class="section-subtitle">2. Update</h4>
-						<p class="section-body">
-							Update is where various parts of the system are updated before they are sent to the GPU for rendering.
-							This is where objects like models and cameras are transformed and inputs are handled.
-						</p>
-
-						<h4 class="section-subtitle">3. Draw</h4>
-						<p class="section-body">
-							This is where DirectX 12 comes back into heavy involvement.
-							The Draw call is wrapped in a set of checks for synchronization.
-							At the beginning of Draw, I wait for any data from the previous frame to be sent to the GPU for rendering so I can start working with CPU side resources.
-							It is important not to swap a texture or move a camera before the data can be sent over!
-							When the wait is finished, I reset the Command Allocator and Command List for the frame buffer I am currently working with.
-							I then set the Render Target View description and clear the current Render Target View.
-							I then use this description to start creating the new Render Target View.
-							Once everything is set, I can start adding commands to the current Command List.
-							Once this is finished, I send the Command List to the Command Queue and send a signal to the GPU that the Queue is ready.
-							I then tell the Swap Chain to Present, and head back over to Update to get ready for the next Draw call.
-						</p>
-
-						<h4 class="section-subtitle">4. Unload Content</h4>
-						<p class="section-body">
-							This is where user content and some DirectX 12 systems gets torn down.
-							The parts of DirectX 12 that were handled by Engine and DX_Framework will be handled after this call.
-						</p>
-
-						<h3 class="section-subtitle">Model</h3>
-						<p class="section-body">
-							This is where Resource Views and Heaps are created to send vertex and index data to the GPU.
-							Models have a SetActive method that can be called to place Topology, Vertex, and Index buffer calls onto the Command List.
-						</p>
-
-						<h3 class="section-subtitle">Camera</h3>
-						<p class="section-body">
-							This is where the abstraction of a camera in the digital 3D space lives.
-							There are no DirectX 12 calls made in the Camera class.
-							However, Camera data needs to be sent to the GPU on a per-frame basis, so I will be mentioning them again when talking about Shaders.
-						</p>
-
-						<h3 class="section-subtitle">Texture</h3>
-						<p class="section-body">
-							In this context, I will be describing textures as image files to be mapped to the surface of models.
-							Textures can be fairly complicated, but for the most part they contain a lot of code to interpret the file’s byte data and upload the data to the GPU.
-							The good news is: once we load the Texture to the GPU, we can just reference it later using descriptors, we do not need to send it over and over again!
-							Like Models, Textures also have a SetActive method that does this referencing.
-						</p>
-
-						<h3 class="section-subtitle">Shaders</h3>
-						<p class="section-body">
-							Shaders contain very important information that is required for any object to be drawn to the screen.
-							The three things that make Shaders important are shader file compilation, Root Signatures and Pipeline States.
-							The Shaders I have written will load HLSL files and define the input layout for the input assembly stage to pass to the vertex shader.
-							A Root Signature is a definition of what kinds of data a Pipeline State will use.
-							For the most part, my Root Signatures describe Constant Buffer Views.
-							These Constant Buffers are what I use to send model, camera, and light data to the vertex and pixel shader stages.
-							The Pipeline State wraps up information about the shader and must be set so the GPU can be in the right state to interpret the data sen to it.
-							Shaders also have a SetActive method that sets their Root Signature and Pipeline State active.
-							It is expensive to switch Root Signatures so it’ s important to take time to define well thought out shaders.
-						</p>
-
-						<h3 class="section-subtitle">Graphics Objects</h3>
-						<p class="section-body">
-							This is where levels of abstraction on top of the DirectX 12 heavy objects begin.
-							Graphics Objects contain references to a Model and Shader (and sometimes Textures) that they are in charge of updating and rendering.
-							This is where all of the aforementioned SetActive calls are made to prepare the GPU for the data that follows.
-							Once everything is set, data such as Constant Buffers can be sent over.
-							Graphics Objects also contain a Draw method that is called during Game’s Draw call.
-						</p>
-
-						<h3 class="section-subtitle">Game Objects</h3>
-						<p class="section-body">
-							I included Game Objects because they are a higher level of abstraction for the Graphics Objects.
-							I feel that this proves that all of the code contained by a Game Object is properly organized and concerns have been separated appropriately.
-							These allow me to move objects around a 3D environment and keep all of my objects in a manager so they can be accessed and destroyed easily.
 						</p>
 					</div>
 				</div>
