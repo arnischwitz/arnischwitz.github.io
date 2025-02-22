@@ -12,6 +12,8 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="style.css">
 		
+		<!-- Flavor -->
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 		<title>Alex's Pascal Engine</title>
 	</head>
 	<body>
@@ -33,7 +35,7 @@
 							I created this game engine during the game engine track at DePaul (GAM 475, GAM 575, GAM 576).
 							It was built using C++ and OpenGL.
 							The engine utilizes many static libraries that I also made for class.
-							They cover the following the following areas: Linear Algebra, File Operations, and PCS Tree.
+							They cover the following the following areas: Linear Algebra & Geometry, File Operations, PCS Trees, and Memory Management.
 						</p>
 						<p class="section-body">
 							Here is a video overview of the Pascal Engine.
@@ -49,9 +51,9 @@
 						<h2 class="section-title">What can it do?</h2>
 						<p class="section-body">
 							The Pascal Engine is pretty simple and is mostly for rendering models and animation for now.
-							The core technology that powers it is OpenGL.
-							It can open Models and Animations that have been converted to the .yogi format (<a href="yogi.html">see Yogi Archiver</a>).
-							It can also skin Animations that have been loaded.
+							The core graphics technology that powers it is OpenGL.
+							It can open Models that have been converted from a .fbx to a .yogi format (<a href="yogi.html">see Yogi Archiver</a>).
+							It can also skin and animate models.
 							Models and Animations are manipulated using different types of Game Objects.
 							Models are attached to Simple Game Objects.
 							Animations are attached to Rigid Game Objects.
@@ -65,33 +67,36 @@
 
 						<h3 class="section-subtitle">Manager Pattern</h3>
 						<p class="section-body">
-							The managers that are used to manage engine resources are made of two main parts: a singleton manager and a doubly linked list of nodes.
+							Managers are used to organize and control engine resources and are made of two main structures: a singleton manager and a doubly linked list of nodes.
 							Each node is a base class that a resource class is derived from.
-							For example: the Model Manager contains a list of Models.
-							By storing only one instance of each type of resource in each manager, a lot of space and time is saved.
+							For example: the Model Manager contains a list of Models that the manager is in charge of creating, updating, and destroying.
+							By managing only one type of resource in each manager, responsibilities are clear and resources remain organized.
 						</p>
 
 						<h3 class="section-subtitle">Models</h3>
 						<p class="section-body">
 							Models are abstractions of vertices and triangles that will be rendered to the screen.
 							They are responsible for keeping track of all information necessary to build triangles using the OpenGL API.
+							Models are also responsible for preparing their data to be sent to the GPU.
 						</p>
 
 						<h3 class="section-subtitle">Textures</h3>
 						<p class="section-body">
 							Textures are abstractions of texuture data to be mapped to model geometry.
 							There can be more than one instance of a texture containing the same image data, but it may have different uv mapping settings.
+							So even though there may be multiple versions of a texture in the cpp code, there is only one texture data gpu resource that is accessed with different texture views.
 						</p>
 
 						<h3 class="section-subtitle">Shaders</h3>
 						<p class="section-body">
 							Shaders are abstractions containing shader files and data for rendering objects.
 							They are responsible for keeping track of all information necessary for graphics objects to know what to send to the GPU.
+							It is important for performance to render as many graphics objects, that use the same shader, together so that the graphics pipeline state changes as little as possible.
 						</p>
 
 						<h3 class="section-subtitle">Resource Manager</h3>
 						<p class="section-body">
-							The Resource Manager does not actually use the Manager Pattern previously mentioned.
+							The Resource Manager does not use the Manager Pattern previously mentioned.
 							This manager is used to load Yogi archives created by the Yogi Archiver.
 							These can be static models, skeletal animations, or skinned animations.
 						</p>
@@ -114,7 +119,7 @@
 						<h3 class="section-subtitle">Math Static Library</h3>
 						<!-- TO DO : <img src="images/vect_scale.png"> -->
 						<p class="section-body">
-							The Math Library can many 3D geometric operations.
+							The Math Library can do many linear algebra and 3D geometric operations.
 							It also wraps some basic trigonmetry from the C++ standard library.
 							The library limits the use of types to increase performance, so floats are always used instead of doubles.
 							The library contains operations and definitions for:
@@ -140,6 +145,18 @@
 							<li>Return information about a tree and its nodes</li>
 						</ul>
 						<img class="img-fluid img-25" src="images/PCS_Tree.png" alt="Card image cap">
+
+						<h3 class="section-subtitle">Memory Management Static Library</h3>
+						<p class="section-body">
+							The Memory Management library takes controll of all memory management that the engine does.
+							It can:
+						</p>
+						<ul>
+							<li>Allocate and reserve blocks of memory</li>
+							<li>Collasce blocks to reduce fragmentation</li>
+							<li>Overload operator new and delete</li>
+							<li>Track memory leaks</li>
+						</ul>
 					</div>
 				</div>
 				<div class="col-md-1"></div>
