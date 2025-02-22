@@ -12,6 +12,8 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="style.css">
 		
+		<!-- Flavor -->
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 		<title>Alex's Yogi Archiver</title>
 	</head>
 	<body>
@@ -50,95 +52,13 @@
 
 						<h2 class="section-title">What can it do?</h2>
 						<p class="section-body">
-							The Pascal Engine is pretty simple and is mostly for rendering models and animation for now.
-							The core technology that powers it is OpenGL.
-							It can open Models and Animations that have been converted to the .yogi format (<a href="yogi.html">see Yogi Archiver</a>).
-							It can also skin Animations that have been loaded.
-							Models and Animations are manipulated using different types of Game Objects.
-							Models are attached to Simple Game Objects.
-							Animations are attached to Rigid Game Objects.
-							Both of these can be attached to other Rigid Game Objects and moved together as groups.
-						</p>
-						<p class="section-body">
-							This is all accomplished using resources, managers, and static libraries.
-						</p>
-						
-						<h2 class="section-title">Resources and Managers</h2>
-
-						<h3 class="section-subtitle">Manager Pattern</h3>
-						<p class="section-body">
-							The managers that are used to manage engine resources are made of two main parts: a singleton manager and a doubly linked list of nodes.
-							Each node is a base class that a resource class is derived from.
-							For example: the Model Manager contains a list of Models.
-							By storing only one instance of each type of resource in each manager, a lot of space and time is saved.
-						</p>
-
-						<h3 class="section-subtitle">Models</h3>
-						<p class="section-body">
-							Models are abstractions of vertices and triangles that will be rendered to the screen.
-							They are responsible for keeping track of all information necessary to build triangles using the OpenGL API.
-						</p>
-
-						<h3 class="section-subtitle">Textures</h3>
-						<p class="section-body">
-							Textures are abstractions of texuture data to be mapped to model geometry.
-							There can be more than one instance of a texture containing the same image data, but it may have different uv mapping settings.
-						</p>
-
-						<h3 class="section-subtitle">Shaders</h3>
-						<p class="section-body">
-							Shaders are abstractions containing shader files and data for rendering objects.
-							They are responsible for keeping track of all information necessary for graphics objects to know what to send to the GPU.
-						</p>
-
-						<h3 class="section-subtitle">Resource Manager</h3>
-						<p class="section-body">
-							The Resource Manager does not actually use the Manager Pattern previously mentioned.
-							This manager is used to load Yogi archives created by the Yogi Archiver.
-							These can be static models, skeletal animations, or skinned animations.
-						</p>
-
-						<h2 class="section-title">Static Libraries</h2>
-						
-						<h3 class="section-subtitle">File Static Library</h3>
-						<p class="section-body">
-							The File Library is a wrapper for Win32 system file IO operations.
-							It can:
+							The Yogi Archiver serves one purpose: rip necessary data from a .fbx file and package it into a .yogi file.
+							It pulls the following data from .fbx files:
 						</p>
 						<ul>
-							<li>Open and close files</li>
-							<li>Open files for read only, write only, or read and write operations</li>
-							<li>Seek and Tell locations on disk</li>
-							<li>Flush the file buffer</li>
-							<li>Check if file handles are valid</li>
-						</ul>
-
-						<h3 class="section-subtitle">Math Static Library</h3>
-						<!-- TO DO : <img src="images/vect_scale.png"> -->
-						<p class="section-body">
-							The Math Library can many 3D geometric operations.
-							It also wraps some basic trigonmetry from the C++ standard library.
-							The library limits the use of types to increase performance, so floats are always used instead of doubles.
-							The library contains operations and definitions for:
-						</p>
-						<ul>
-							<li>Trigonmetry (general operations)</li>
-							<li>Vectors (general operations, special constructions, conversions, and linear interpolation)</li>
-							<li>Quaternions (general operations, special constructions, conversions, and spherical linear interpolation)</li>
-							<li>Matrices (general operations, special constructions, and conversions</li>
-							<li>Utilities for comparing floating point values within error</li>
-							<li>Frequently used mathematical constants</li>
-						</ul>
-
-						<h3 class="section-subtitle">PCS Tree Static Library</h3>
-						<p class="section-body">
-							The PCS Tree Library can create and manipulate trees constructed using a Parent, Child, Sibling relationship structure.
-							It can:
-						</p>
-						<ul>
-							<li>Create and destroy PCS Trees</li>
-							<li>Create, destroy, insert, and remove PCS Nodes</li>
-							<li>Return information about a tree and its nodes</li>
+							<li>Vertex and index data</li>
+							<li>Animation frame and transform data</li>
+							<li>Skeletal data</li>
 						</ul>
 					</div>
 				</div>
