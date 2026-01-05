@@ -53,10 +53,51 @@ body{
     white-space: nowrap;
 }
 
-.cardrow{
-	margin-bottom: 2.0em;
-	margin-left: 2.0em;
-	margin-right: 2.0em;
+.cards-container {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+	padding: 1.5rem;
+}
+
+.cards-container .card {
+	margin: 0;
+	aspect-ratio: 5 / 7;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	border-radius: 12px;
+}
+
+.cards-container .card .card-img-top {
+	flex-shrink: 0;
+	object-fit: cover;
+	height: 45%;
+}
+
+.cards-container .card .card-body {
+	flex: 1;
+	overflow: hidden;
+}
+
+.cards-container .card .card-footer {
+	flex-shrink: 0;
+}
+
+.cards-container .card.card-horizontal {
+	aspect-ratio: 7 / 5;
+}
+
+@media (max-width: 992px) {
+	.cards-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 576px) {
+	.cards-container {
+		grid-template-columns: 1fr;
+	}
 }
 
 .section-body{
